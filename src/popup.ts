@@ -148,7 +148,7 @@ export class AidePopup {
 			attr: { 'aria-label': 'Send' },
 		});
 		const ns = 'http://www.w3.org/2000/svg';
-		const sendSvg = document.createElementNS(ns, 'svg');
+		const sendSvg = activeDocument.createElementNS(ns, 'svg');
 		sendSvg.setAttribute('width', '14');
 		sendSvg.setAttribute('height', '14');
 		sendSvg.setAttribute('viewBox', '0 0 24 24');
@@ -157,10 +157,10 @@ export class AidePopup {
 		sendSvg.setAttribute('stroke-width', '2');
 		sendSvg.setAttribute('stroke-linecap', 'round');
 		sendSvg.setAttribute('stroke-linejoin', 'round');
-		const p1 = document.createElementNS(ns, 'path');
+		const p1 = activeDocument.createElementNS(ns, 'path');
 		p1.setAttribute('d', 'M22 2L11 13');
 		sendSvg.appendChild(p1);
-		const p2 = document.createElementNS(ns, 'path');
+		const p2 = activeDocument.createElementNS(ns, 'path');
 		p2.setAttribute('d', 'M22 2l-7 20-4-9-9-4 20-7z');
 		sendSvg.appendChild(p2);
 		sendBtn.appendChild(sendSvg);
