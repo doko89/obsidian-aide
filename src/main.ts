@@ -51,4 +51,3 @@ export default class AidePlugin extends Plugin {
 		this.triggerChar = this.settings.triggerChar;
 	}
 }
-// trigger re-scan
