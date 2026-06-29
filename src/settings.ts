@@ -62,7 +62,7 @@ export class AideSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Aide settings' });
+		new Setting(containerEl).setName('Aide settings').setHeading();
 
 		new Setting(containerEl)
 			.setName('API base URL')
@@ -112,7 +112,6 @@ export class AideSettingTab extends PluginSettingTab {
 				slider
 					.setLimits(512, 8192, 512)
 					.setValue(this.plugin.settings.maxTokens)
-					.setDynamicTooltip()
 					.onChange(async (value) => {
 						this.plugin.settings.maxTokens = value;
 						await this.plugin.saveSettings();
@@ -126,7 +125,6 @@ export class AideSettingTab extends PluginSettingTab {
 				slider
 					.setLimits(0, 20, 1)
 					.setValue(Math.round(this.plugin.settings.temperature * 10))
-					.setDynamicTooltip()
 					.onChange(async (value) => {
 						this.plugin.settings.temperature = value / 10;
 						await this.plugin.saveSettings();
@@ -180,7 +178,7 @@ export class AideSettingTab extends PluginSettingTab {
 				});
 		});
 
-		containerEl.createEl('h3', { text: 'Web search' });
+		new Setting(containerEl).setName('Web search').setHeading();
 
 		new Setting(containerEl)
 			.setName('Enable web search')
@@ -279,7 +277,7 @@ export class AideSettingTab extends PluginSettingTab {
 				});
 		});
 
-		containerEl.createEl('h3', { text: 'SVG generation' });
+		new Setting(containerEl).setName('SVG generation').setHeading();
 
 		new Setting(containerEl)
 			.setName('Assets folder')
@@ -294,7 +292,7 @@ export class AideSettingTab extends PluginSettingTab {
 					}),
 			);
 
-		containerEl.createEl('h3', { text: 'Limits' });
+		new Setting(containerEl).setName('Limits').setHeading();
 
 		new Setting(containerEl)
 			.setName('Max search results')
@@ -303,7 +301,6 @@ export class AideSettingTab extends PluginSettingTab {
 				slider
 					.setLimits(1, 20, 1)
 					.setValue(this.plugin.settings.maxSearchResults)
-					.setDynamicTooltip()
 					.onChange(async (value) => {
 						this.plugin.settings.maxSearchResults = value;
 						await this.plugin.saveSettings();
@@ -317,7 +314,6 @@ export class AideSettingTab extends PluginSettingTab {
 				slider
 					.setLimits(1000, 50000, 1000)
 					.setValue(this.plugin.settings.maxFetchLength)
-					.setDynamicTooltip()
 					.onChange(async (value) => {
 						this.plugin.settings.maxFetchLength = value;
 						await this.plugin.saveSettings();
@@ -331,7 +327,6 @@ export class AideSettingTab extends PluginSettingTab {
 				slider
 					.setLimits(1, 15, 1)
 					.setValue(this.plugin.settings.maxToolRounds)
-					.setDynamicTooltip()
 					.onChange(async (value) => {
 						this.plugin.settings.maxToolRounds = value;
 						await this.plugin.saveSettings();

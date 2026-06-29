@@ -309,7 +309,7 @@ async function streamResponse(
 
 	const fetchBody = { ...body, stream: true };
 
-	const response = await fetch(url, {
+	const response = await window.fetch(url, {
 		method: 'POST',
 		headers,
 		body: JSON.stringify(fetchBody),

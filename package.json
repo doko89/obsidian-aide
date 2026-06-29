@@ -12,6 +12,9 @@
 	},
 	"keywords": ["obsidian", "plugin", "ai", "openai", "writing"],
 	"license": "MIT",
+	"dependencies": {
+		"@codemirror/view": "^6.36.6"
+	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.4",
 		"@types/node": "^22.15.17",

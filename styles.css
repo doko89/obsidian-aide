@@ -13,6 +13,27 @@
 	to { transform: rotate(360deg); }
 }
 
+.aide-auto-resize {
+	overflow: hidden;
+}
+
+.aide-centered {
+	position: fixed;
+	bottom: 40%;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.aide-positioned {
+	position: fixed;
+}
+
+.aide-send-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .aide-popup {
 	position: fixed;
 	z-index: var(--layer-popover);

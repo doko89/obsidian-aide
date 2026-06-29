@@ -18,8 +18,8 @@ export default class AidePlugin extends Plugin {
 		this.registerEditorExtension(createAIExtension(this));
 
 		this.addCommand({
-			id: 'show-aide',
-			name: 'Show Aide',
+			id: 'show',
+			name: 'Show',
 			editorCallback: (editor: Editor, _ctx: MarkdownView | MarkdownFileInfo) => {
 				this.showPopup(editor);
 			},

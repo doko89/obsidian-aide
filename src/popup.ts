@@ -138,7 +138,7 @@ export class AidePopup {
 
 		const autoResize = () => {
 			if (!this.inputEl) return;
-			this.inputEl.style.height = 'auto';
+			this.inputEl.classList.add('aide-auto-resize');
 			this.inputEl.style.height = `${this.inputEl.scrollHeight}px`;
 		};
 		this.inputEl.addEventListener('input', autoResize);
@@ -147,7 +147,23 @@ export class AidePopup {
 			cls: 'aide-send-btn',
 			attr: { 'aria-label': 'Send' },
 		});
-		sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+		const ns = 'http://www.w3.org/2000/svg';
+		const sendSvg = document.createElementNS(ns, 'svg');
+		sendSvg.setAttribute('width', '14');
+		sendSvg.setAttribute('height', '14');
+		sendSvg.setAttribute('viewBox', '0 0 24 24');
+		sendSvg.setAttribute('fill', 'none');
+		sendSvg.setAttribute('stroke', 'currentColor');
+		sendSvg.setAttribute('stroke-width', '2');
+		sendSvg.setAttribute('stroke-linecap', 'round');
+		sendSvg.setAttribute('stroke-linejoin', 'round');
+		const p1 = document.createElementNS(ns, 'path');
+		p1.setAttribute('d', 'M22 2L11 13');
+		sendSvg.appendChild(p1);
+		const p2 = document.createElementNS(ns, 'path');
+		p2.setAttribute('d', 'M22 2l-7 20-4-9-9-4 20-7z');
+		sendSvg.appendChild(p2);
+		sendBtn.appendChild(sendSvg);
 
 		const executeCustom = () => {
 			if (!this.inputEl) return;
@@ -242,20 +258,17 @@ export class AidePopup {
 		}
 
 		if (!pos) {
-			this.containerEl.style.position = 'fixed';
-			this.containerEl.style.bottom = '40%';
-			this.containerEl.style.left = '50%';
-			this.containerEl.style.transform = 'translateX(-50%)';
+			this.containerEl.addClass('aide-centered');
 			return;
 		}
 
-		this.containerEl.style.position = 'fixed';
+		this.containerEl.addClass('aide-positioned');
 		this.containerEl.style.left = `${Math.min(pos.left, window.innerWidth - 400)}px`;
 		this.containerEl.style.top = `${Math.min(pos.top + 24, window.innerHeight - 400)}px`;
 	}
 
 	private focus() {
-		setTimeout(() => {
+		window.setTimeout(() => {
 			if (this.inputEl) {
 				this.inputEl.focus();
 			}
@@ -400,6 +413,6 @@ export class AidePopup {
 		closeBtn.setText('Back');
 		closeBtn.addEventListener('click', () => this.close());
 
-		setTimeout(() => this.close(), 8000);
+		window.setTimeout(() => this.close(), 8000);
 	}
 }
