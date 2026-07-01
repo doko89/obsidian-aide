@@ -9,10 +9,6 @@
 	}
 }
 
-@keyframes aide-spin {
-	to { transform: rotate(360deg); }
-}
-
 .aide-auto-resize {
 	overflow: hidden;
 }
@@ -257,30 +253,6 @@
 	background: var(--background-modifier-hover);
 	color: var(--text-normal);
 }
-
-.aide-stream {
-	padding: 0 8px;
-}
-
-.aide-stream-header {
-	font-size: 11px;
-	color: var(--text-muted);
-	margin-bottom: 6px;
-}
-
-.aide-stream-content {
-	max-height: 180px;
-	overflow-y: auto;
-	padding: 8px 10px;
-	background: var(--background-secondary);
-	border-radius: 8px;
-	font-size: 13px;
-	line-height: 1.5;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-	color: var(--text-normal);
-}
-
 .aide-error {
 	text-align: center;
 	padding: 24px 16px;

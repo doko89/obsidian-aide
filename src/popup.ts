@@ -61,7 +61,6 @@ export class AidePopup {
 	private clickOutsideHandler: ((e: MouseEvent) => void) | null = null;
 	private inputEl: HTMLTextAreaElement | null = null;
 	private statusEl: HTMLElement | null = null;
-	private streamContentEl: HTMLElement | null = null;
 	private actionsEl: HTMLElement | null = null;
 	private moreArrowEl: HTMLElement | null = null;
 	private cancelled = false;
@@ -190,9 +189,6 @@ export class AidePopup {
 		this.statusEl = this.containerEl.createDiv({ cls: 'aide-status-panel' });
 		this.statusEl.hidden = true;
 
-		this.streamContentEl = this.containerEl.createDiv({ cls: 'aide-stream' });
-		this.streamContentEl.hidden = true;
-
 		const moreBtn = this.containerEl.createEl('button', {
 			cls: 'aide-more-btn',
 			attr: { 'aria-label': 'More actions' },
@@ -309,32 +305,6 @@ export class AidePopup {
 		entry.scrollIntoView({ block: 'end' });
 	}
 
-	private showStreamPanel() {
-		if (this.streamContentEl) {
-			this.streamContentEl.hidden = false;
-			this.streamContentEl.empty();
-
-			this.streamContentEl.createDiv({ cls: 'aide-stream-header', text: 'Generating...' });
-			this.streamContentEl.createDiv({ cls: 'aide-stream-content' });
-		}
-	}
-
-	private appendToken(text: string) {
-		if (!this.streamContentEl) return;
-		if (this.streamContentEl.hidden) {
-			this.showStreamPanel();
-		}
-		if (this.statusEl) {
-			this.statusEl.hidden = true;
-		}
-		const content = this.streamContentEl.querySelector('.aide-stream-content');
-		if (content) {
-			const el = content as HTMLElement;
-			el.setText(el.textContent + text);
-			el.scrollTop = el.scrollHeight;
-		}
-	}
-
 	private async execute(action: AIAction, customPrompt?: string) {
 		this.showStatus();
 		this.containerEl.addClass('aide-loading');
@@ -361,7 +331,6 @@ export class AidePopup {
 		};
 
 		const onToken: TokenCallback = (text: string) => {
-			this.appendToken(text);
 			if (this.replaceRange) {
 				this.insertToEditor(text);
 			}
