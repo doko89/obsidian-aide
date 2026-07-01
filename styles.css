@@ -9,6 +9,11 @@
 	}
 }
 
+@keyframes aide-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.4; }
+}
+
 .aide-auto-resize {
 	overflow: hidden;
 }
@@ -222,6 +227,10 @@
 	font-size: 12px;
 	color: var(--text-normal);
 	padding: 2px 10px;
+}
+
+.aide-status-entry:not(.aide-status-done) {
+	animation: aide-pulse 1.5s ease-in-out infinite;
 }
 
 .aide-status-entry::before {

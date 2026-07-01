@@ -367,6 +367,9 @@ export class AidePopup {
 		const cm = getEditorView(this.editor);
 		if (!cm || !this.replaceRange) return;
 
+		const doc = cm.state.doc;
+		if (this.replaceRange.from > doc.length || this.replaceRange.to > doc.length) return;
+
 		try {
 			if (this.startPos === null) {
 				cm.dispatch({
@@ -374,6 +377,7 @@ export class AidePopup {
 				});
 				this.startPos = this.replaceRange.from + text.length;
 			} else {
+				if (this.startPos > doc.length) return;
 				cm.dispatch({
 					changes: { from: this.startPos, to: this.startPos, insert: text },
 				});
@@ -387,14 +391,17 @@ export class AidePopup {
 
 	private async writeToNewNote(content: string) {
 		const app = getApp();
-		if (!app) return;
+		if (!app) {
+			new Notice('Failed to save AI response');
+			return;
+		}
 		const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 		const name = `AI Response ${ts}.md`;
 		try {
 			await app.vault.create(name, content);
-			new Notice(`Created ${name}`);
+			new Notice(`AI response saved to ${name}`);
 		} catch {
-			// give up
+			new Notice('Failed to save AI response');
 		}
 	}
 
