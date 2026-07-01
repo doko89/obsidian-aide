@@ -2,6 +2,7 @@ import { requestUrl } from 'obsidian';
 import type AidePlugin from './main';
 import type { AideSettings } from './settings';
 import { webSearch, webFetch } from './web-search';
+import { fetchYoutubeTranscript } from './youtube-transcript';
 
 interface ChatMessage {
 	role: 'system' | 'user' | 'assistant' | 'tool';
@@ -99,8 +100,27 @@ const WEB_FETCH_TOOL = {
 	},
 };
 
+const YT_TRANSCRIPT_TOOL = {
+	type: 'function',
+	function: {
+		name: 'yt_transcript',
+		description:
+			'Fetch the transcript/subtitles of a YouTube video. Use this when the user wants a summary, analysis, or key points from a video. Provide the video URL.',
+		parameters: {
+			type: 'object',
+			properties: {
+				url: {
+					type: 'string',
+					description: 'The YouTube video URL',
+				},
+			},
+			required: ['url'],
+		},
+	},
+};
+
 function getTools(settings: AideSettings): unknown[] {
-	const tools: unknown[] = [SVG_TOOL];
+	const tools: unknown[] = [SVG_TOOL, YT_TRANSCRIPT_TOOL];
 	if (settings.enableWebSearch) {
 		tools.push(WEB_SEARCH_TOOL, WEB_FETCH_TOOL);
 	}
@@ -512,6 +532,18 @@ async function executeToolCall(
 			return `SVG image has been generated and saved. Insert this markdown in your note:\n${markdown}`;
 		} catch (err) {
 			return `SVG generation error: ${err instanceof Error ? err.message : 'Unknown error'}`;
+		}
+	}
+
+	if (name === 'yt_transcript') {
+		const url = args.url ?? '';
+		onProgress?.(`Fetching YouTube transcript...`);
+		try {
+			const transcript = await fetchYoutubeTranscript(url);
+			onProgress?.('Transcript fetched successfully');
+			return `YouTube transcript:\n\n${transcript}`;
+		} catch (err) {
+			return `Transcript error: ${err instanceof Error ? err.message : 'Unknown error'}`;
 		}
 	}
 
