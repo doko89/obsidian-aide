@@ -1,7 +1,7 @@
 {
   "id": "aide",
   "name": "Aide",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "minAppVersion": "1.5.0",
   "description": "AI writing assistant powered by OpenAI-compatible APIs.",
   "author": "doko",
