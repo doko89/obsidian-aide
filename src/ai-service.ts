@@ -257,7 +257,7 @@ async function chatCompletionWithTools(
 			max_tokens: maxTokens,
 			temperature,
 			tools: getTools(plugin.settings),
-			tool_choice: 'auto',
+			tool_choice: round === MAX_ROUNDS - 1 ? 'none' : 'auto',
 		};
 		if (reasoningEffort !== 'off') {
 			body.reasoning_effort = reasoningEffort;
