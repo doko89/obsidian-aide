@@ -32,7 +32,7 @@ export const DEFAULT_SETTINGS: AideSettings = {
 	apiBaseUrl: 'https://api.openai.com/v1',
 	apiKey: '',
 	model: 'gpt-4o-mini',
-	maxTokens: 8192,
+	maxTokens: 65536,
 	temperature: 0.7,
 	systemPrompt: 'You are a helpful writing assistant. Respond with only the requested content, no extra commentary. Use the web_search and web_fetch tools when you need current information. Use the generate_svg tool when the user asks for diagrams, charts, illustrations, or any visual content — it will save an SVG file and return a markdown image link to insert in the note.',
 	triggerChar: '/',
@@ -105,20 +105,23 @@ export class AideSettingTab extends PluginSettingTab {
 					}),
 			);
 
-		new Setting(containerEl)
+		const maxTokensSetting = new Setting(containerEl)
 			.setName('Max tokens')
 			.setDesc('Maximum number of tokens in the response')
 			.addSlider((slider) =>
 				slider
-					.setLimits(512, 8192, 512)
+					.setLimits(512, 131072, 1024)
 					.setValue(this.plugin.settings.maxTokens)
 					.onChange(async (value) => {
 						this.plugin.settings.maxTokens = value;
 						await this.plugin.saveSettings();
+						maxTokensValue.setText(String(value));
 					}),
 			);
+		const maxTokensValue = maxTokensSetting.controlEl.createSpan({ cls: 'aide-slider-value' });
+		maxTokensValue.setText(String(this.plugin.settings.maxTokens));
 
-		new Setting(containerEl)
+		const tempSetting = new Setting(containerEl)
 			.setName('Temperature')
 			.setDesc('Controls randomness (0 = deterministic, 2 = very random)')
 			.addSlider((slider) =>
@@ -128,8 +131,11 @@ export class AideSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.temperature = value / 10;
 						await this.plugin.saveSettings();
+						tempValue.setText((value / 10).toFixed(1));
 					}),
 			);
+		const tempValue = tempSetting.controlEl.createSpan({ cls: 'aide-slider-value' });
+		tempValue.setText(this.plugin.settings.temperature.toFixed(1));
 
 		new Setting(containerEl)
 			.setName('Reasoning effort')
@@ -294,7 +300,7 @@ export class AideSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl).setName('Limits').setHeading();
 
-		new Setting(containerEl)
+		const maxSearchSetting = new Setting(containerEl)
 			.setName('Max search results')
 			.setDesc('Number of search results returned per query')
 			.addSlider((slider) =>
@@ -304,10 +310,13 @@ export class AideSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.maxSearchResults = value;
 						await this.plugin.saveSettings();
+						maxSearchValue.setText(String(value));
 					}),
 			);
+		const maxSearchValue = maxSearchSetting.controlEl.createSpan({ cls: 'aide-slider-value' });
+		maxSearchValue.setText(String(this.plugin.settings.maxSearchResults));
 
-		new Setting(containerEl)
+		const maxFetchSetting = new Setting(containerEl)
 			.setName('Max fetch length')
 			.setDesc('Maximum characters to fetch from a webpage')
 			.addSlider((slider) =>
@@ -317,10 +326,13 @@ export class AideSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.maxFetchLength = value;
 						await this.plugin.saveSettings();
+						maxFetchValue.setText(String(value));
 					}),
 			);
+		const maxFetchValue = maxFetchSetting.controlEl.createSpan({ cls: 'aide-slider-value' });
+		maxFetchValue.setText(String(this.plugin.settings.maxFetchLength));
 
-		new Setting(containerEl)
+		const maxRoundsSetting = new Setting(containerEl)
 			.setName('Max tool rounds')
 			.setDesc('Maximum rounds of tool calls (search/fetch) per request')
 			.addSlider((slider) =>
@@ -330,7 +342,10 @@ export class AideSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.maxToolRounds = value;
 						await this.plugin.saveSettings();
+						maxRoundsValue.setText(String(value));
 					}),
 			);
+		const maxRoundsValue = maxRoundsSetting.controlEl.createSpan({ cls: 'aide-slider-value' });
+		maxRoundsValue.setText(String(this.plugin.settings.maxToolRounds));
 	}
 }

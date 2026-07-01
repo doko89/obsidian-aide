@@ -307,3 +307,13 @@
 	min-height: 80px;
 	resize: vertical;
 }
+
+.aide-slider-value {
+	margin-left: 8px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-muted);
+	min-width: 28px;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
