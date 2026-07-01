@@ -66,6 +66,8 @@ export class AidePopup {
 	private moreArrowEl: HTMLElement | null = null;
 	private cancelled = false;
 	private isActionsOpen = false;
+	private startPos: number | null = null;
+	private replaceRange: { from: number; to: number } | null = null;
 
 	constructor(plugin: AidePlugin, editor: Editor) {
 		this.plugin = plugin;
@@ -337,12 +339,31 @@ export class AidePopup {
 		this.showStatus();
 		this.containerEl.addClass('aide-loading');
 
+		this.startPos = null;
+		this.replaceRange = null;
+
+		const cm = getEditorView(this.editor);
+		const hasSelection = !!this.editor.getSelection();
+
+		if (cm) {
+			const main = cm.state.selection.main;
+			if (hasSelection) {
+				this.replaceRange = { from: main.from, to: main.to };
+			} else {
+				const line = cm.state.doc.lineAt(main.head);
+				this.replaceRange = { from: line.from, to: line.to };
+			}
+		}
+
 		const onProgress: ProgressCallback = (status: string) => {
 			this.updateStatus(status);
 		};
 
 		const onToken: TokenCallback = (text: string) => {
 			this.appendToken(text);
+			if (this.replaceRange) {
+				this.insertToEditor(text);
+			}
 		};
 
 		try {
@@ -358,11 +379,30 @@ export class AidePopup {
 
 			if (this.cancelled) return;
 
-			this.replaceText(result, selectedText);
+			if (!this.replaceRange) {
+				this.replaceText(result, selectedText);
+			}
 			this.close();
 		} catch (err) {
 			if (this.cancelled) return;
 			this.showError(err instanceof Error ? err.message : 'Unknown error');
+		}
+	}
+
+	private insertToEditor(text: string) {
+		const cm = getEditorView(this.editor);
+		if (!cm || !this.replaceRange) return;
+
+		if (this.startPos === null) {
+			cm.dispatch({
+				changes: { from: this.replaceRange.from, to: this.replaceRange.to, insert: text },
+			});
+			this.startPos = this.replaceRange.from + text.length;
+		} else {
+			cm.dispatch({
+				changes: { from: this.startPos, to: this.startPos, insert: text },
+			});
+			this.startPos += text.length;
 		}
 	}
 
