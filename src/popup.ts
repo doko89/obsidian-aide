@@ -411,7 +411,34 @@ export class AidePopup {
 
 		const cursor = this.editor.getCursor();
 		const line = this.editor.getLine(cursor.line);
+
+		const before = this.getTextBeforeCursor(cursor, 4000);
+		if (before.length > line.length) {
+			return before + '\n' + line;
+		}
+
 		return line;
+	}
+
+	private getTextBeforeCursor(cursor: { line: number; ch: number }, maxChars: number): string {
+		const lines: string[] = [];
+		let total = 0;
+
+		for (let i = cursor.line; i >= 0; i--) {
+			const text = this.editor.getLine(i);
+			const lineText = i === cursor.line ? text.slice(0, cursor.ch) : text;
+
+			if (lines.length > 0 && lineText.trim().length === 0) break;
+
+			if (total + lineText.length + 1 > maxChars) break;
+
+			lines.unshift(lineText);
+			total += lineText.length + 1;
+
+			if (/^#{1,6}\s/.test(lineText.trim())) break;
+		}
+
+		return lines.join('\n');
 	}
 
 	private replaceText(result: string, originalText: string) {
