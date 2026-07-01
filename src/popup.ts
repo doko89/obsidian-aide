@@ -283,30 +283,29 @@ export class AidePopup {
 		this.statusEl.empty();
 		this.statusEl.removeClass('aide-status-panel-done');
 
-		const statusContent = this.statusEl.createDiv({ cls: 'aide-status-content' });
-		statusContent.createDiv({ cls: 'aide-status-spinner' });
-		const textEl = statusContent.createDiv({ cls: 'aide-status-text' });
-		textEl.setText('AI is thinking...');
+		this.statusEl.createDiv({ cls: 'aide-status-log' });
 
-		const cancelBtn = this.statusEl.createEl('button', {
+		this.statusEl.createEl('button', {
 			cls: 'aide-cancel-btn',
+			text: 'Cancel',
 			attr: { 'aria-label': 'Cancel' },
-		});
-		cancelBtn.setText('Cancel');
-		cancelBtn.addEventListener('click', () => {
+		}).addEventListener('click', () => {
 			this.cancelled = true;
 			this.close();
 		});
-
-		return textEl;
 	}
 
 	private updateStatus(text: string) {
 		if (!this.statusEl || this.statusEl.hidden) return;
-		const textEl = this.statusEl.querySelector('.aide-status-text');
-		if (textEl) {
-			textEl.setText(text);
+		const log = this.statusEl.querySelector('.aide-status-log');
+		if (!log) return;
+		const items = Array.from(log.querySelectorAll('.aide-status-entry'));
+		const entry = (log as HTMLElement).createDiv({ cls: 'aide-status-entry' });
+		if (items.length > 0) {
+			(items[items.length - 1] as HTMLElement).addClass('aide-status-done');
 		}
+		entry.setText(text);
+		entry.scrollIntoView({ block: 'end' });
 	}
 
 	private showStreamPanel() {
