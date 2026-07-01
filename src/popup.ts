@@ -1,5 +1,5 @@
 import { EditorView } from '@codemirror/view';
-import { type App, Editor, MarkdownView } from 'obsidian';
+import { type App, Editor, MarkdownView, Notice } from 'obsidian';
 import type AidePlugin from './main';
 import {
 	type AIAction,
@@ -68,6 +68,7 @@ export class AidePopup {
 	private isActionsOpen = false;
 	private startPos: number | null = null;
 	private replaceRange: { from: number; to: number } | null = null;
+	private streamingWrote = false;
 
 	constructor(plugin: AidePlugin, editor: Editor) {
 		this.plugin = plugin;
@@ -340,6 +341,7 @@ export class AidePopup {
 
 		this.startPos = null;
 		this.replaceRange = null;
+		this.streamingWrote = false;
 
 		const cm = getEditorView(this.editor);
 		const hasSelection = !!this.editor.getSelection();
@@ -378,8 +380,12 @@ export class AidePopup {
 
 			if (this.cancelled) return;
 
-			if (!this.replaceRange) {
-				this.replaceText(result, selectedText);
+			if (result && !this.streamingWrote) {
+				try {
+					this.replaceText(result, selectedText);
+				} catch {
+					await this.writeToNewNote(result);
+				}
 			}
 			this.close();
 		} catch (err) {
@@ -392,16 +398,34 @@ export class AidePopup {
 		const cm = getEditorView(this.editor);
 		if (!cm || !this.replaceRange) return;
 
-		if (this.startPos === null) {
-			cm.dispatch({
-				changes: { from: this.replaceRange.from, to: this.replaceRange.to, insert: text },
-			});
-			this.startPos = this.replaceRange.from + text.length;
-		} else {
-			cm.dispatch({
-				changes: { from: this.startPos, to: this.startPos, insert: text },
-			});
-			this.startPos += text.length;
+		try {
+			if (this.startPos === null) {
+				cm.dispatch({
+					changes: { from: this.replaceRange.from, to: this.replaceRange.to, insert: text },
+				});
+				this.startPos = this.replaceRange.from + text.length;
+			} else {
+				cm.dispatch({
+					changes: { from: this.startPos, to: this.startPos, insert: text },
+				});
+				this.startPos += text.length;
+			}
+			this.streamingWrote = true;
+		} catch {
+			// CM dispatch failed — fallback will handle at the end
+		}
+	}
+
+	private async writeToNewNote(content: string) {
+		const app = getApp();
+		if (!app) return;
+		const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+		const name = `AI Response ${ts}.md`;
+		try {
+			await app.vault.create(name, content);
+			new Notice(`Created ${name}`);
+		} catch {
+			// give up
 		}
 	}
 
